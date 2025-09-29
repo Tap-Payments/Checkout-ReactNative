@@ -7,7 +7,7 @@ PODS:
     - SwiftyRSA
     - TapCardScannerWebWrapper-iOS
     - TapFontKit-iOS
-  - CheckoutReactNative (0.1.0):
+  - CheckoutReactNative (1.0.0):
     - Checkout-IOS (= 1.0.1)
     - DoubleConversion
     - glog
@@ -1944,7 +1944,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   Checkout-IOS: 3925d2d1637d1179d5b768d11b69b1da4660e1e4
-  CheckoutReactNative: ad3f8d2af19431f6028b7e8d1b074ea89c7144d0
+  CheckoutReactNative: f488406dd5596ad763053680e0442461400d9e44
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 84b955f7b4da8b895faf5946f73748267347c975
