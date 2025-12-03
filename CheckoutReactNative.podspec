@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm,cpp,swift}"
   s.private_header_files = "ios/**/*.h"
-  s.dependency 'Checkout-IOS', '1.0.1'
+  s.dependency 'Checkout-IOS', '1.0.3'
 
 
   install_modules_dependencies(s)
