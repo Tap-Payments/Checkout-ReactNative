@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.dependency 'Checkout-IOS', '1.0.4'
+  s.dependency 'Checkout-IOS', '1.0.3'
 
 
   install_modules_dependencies(s)
