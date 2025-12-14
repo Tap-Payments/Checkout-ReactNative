@@ -1,5 +1,10 @@
 #import "CheckoutReactNative.h"
-#import "CheckoutReactNative-Swift.h"  // Import the Swift bridging header
+
+#if __has_include(<CheckoutReactNative/CheckoutReactNative-Swift.h>)
+#import <CheckoutReactNative/CheckoutReactNative-Swift.h>
+#else
+#import "CheckoutReactNative-Swift.h"
+#endif
 
 @implementation CheckoutReactNative {
   CheckoutSDKBridge* _bridge;  // Instance variable to keep reference
