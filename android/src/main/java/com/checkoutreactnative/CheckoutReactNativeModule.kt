@@ -20,7 +20,7 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
 
   private var tapCheckoutView: TapCheckout? = null
   private var fullscreenView: android.view.View? = null
-  
+
   // Store callbacks as instance variables to preserve them
   private var onSuccessCallback: Callback? = null
   private var onErrorCallback: Callback? = null
@@ -43,7 +43,7 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
     this.onErrorCallback = onError
     this.onCloseCallback = onClose
     this.onReadyCallback = onReady
-    
+
     val currentActivity = currentActivity
     if (currentActivity == null) {
       onError.invoke("NO_ACTIVITY", "No activity available")
@@ -55,35 +55,44 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
         // Inflate the layout
         val view = LayoutInflater.from(currentActivity).inflate(R.layout.tap_checkout_kit_layout, null)
         tapCheckoutView = view.findViewById(R.id.redirect_pay)
-        
+
         // Store reference for later removal
         fullscreenView = view
-        
+
         // Set fullscreen layout parameters
         val layoutParams = ViewGroup.LayoutParams(
           ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.MATCH_PARENT
         )
         view.layoutParams = layoutParams
-        
+
         // Add the view to activity's content view as fullscreen
         val contentView = currentActivity.findViewById<ViewGroup>(android.R.id.content)
         contentView.addView(view, layoutParams)
 
-        val androidConfiguration = createAndroidConfiguration(configurations.toHashMap())
-        
+        // Convert configurations directly using recursive mapping
+        val androidConfiguration = convertToSDKFormat(configurations.toHashMap())
+
+        // Add Android-specific configurations
+        androidConfiguration["open"] = true
+        androidConfiguration["checkoutMode"] = "page"
+        androidConfiguration["isApplePayAvailableOnClient"] = false
+
+        // Handle transaction mode: if authorize mode, move charge data to authorize key
+        handleTransactionMode(androidConfiguration)
+
         // Extract public key from configurations
         val gateway = configurations.getMap("gateway")
         val publicKey = gateway?.getString("publicKey") ?: ""
-        
+
         if (publicKey.isEmpty()) {
           onError.invoke("INVALID_CONFIGURATION", "Public key is required")
           return@runOnUiThread
         }
-        
+
         // Create delegate object
         val delegate = createCheckoutDelegate()
-        
+
         // Call CheckoutConfiguration.configureWithTapCheckoutDictionary
         CheckoutConfiguration.configureWithTapCheckoutDictionary(
           currentActivity,
@@ -92,167 +101,121 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
           androidConfiguration,
           delegate
         )
-        
+
       } catch (e: Exception) {
         onError.invoke("CHECKOUT_ERROR", "Failed to start checkout: ${e.message}")
       }
     }
   }
 
-  private fun createAndroidConfiguration(configurations: Map<String, Any?>): LinkedHashMap<String, Any> {
-    val configuration = LinkedHashMap<String, Any>()
-    
+  /**
+   * Handles transaction mode: if mode contains "authorize", moves charge data to authorize key
+   * This is required by the SDK to differentiate between charge and authorize transactions
+   */
+  private fun handleTransactionMode(configuration: LinkedHashMap<String, Any>) {
     try {
-      // Basic configuration
-      configuration["open"] = true
-      configuration["hashString"] = configurations["hashString"] ?: ""
-      configuration["checkoutMode"] = "page"
-      configuration["language"] = configurations["language"] ?: "en"
-      configuration["themeMode"] = configurations["themeMode"] ?: "light"
-      
-      // Payment methods
-      val supportedPaymentMethods = configurations["supportedPaymentMethods"]
-      if (supportedPaymentMethods == "ALL") {
-        configuration["supportedPaymentMethods"] = "ALL"
-      } else if (supportedPaymentMethods is List<*>) {
-        val jsonArrayPaymentMethod = JSONArray(supportedPaymentMethods)
-        configuration["supportedPaymentMethods"] = jsonArrayPaymentMethod
-      } else {
-        configuration["supportedPaymentMethods"] = "ALL"
-      }
-      
-      configuration["paymentType"] = configurations["paymentType"] ?: "ALL"
-      configuration["selectedCurrency"] = configurations["selectedCurrency"] ?: "KWD"
-      configuration["supportedCurrencies"] = "ALL"
-      
-      // Gateway
-      val gateway = configurations["gateway"] as? Map<String, Any?>
-      if (gateway != null) {
-        val gatewayObj = JSONObject()
-        gatewayObj.put("publicKey", gateway["publicKey"] ?: "")
-        gatewayObj.put("merchantId", gateway["merchantId"] ?: "")
-        configuration["gateway"] = gatewayObj
-      }
-      
-      // Customer
-      val customer = configurations["customer"] as? Map<String, Any?>
-      if (customer != null) {
-        val customerObj = JSONObject()
-        customerObj.put("firstName", customer["firstName"] ?: "")
-        customerObj.put("lastName", customer["lastName"] ?: "")
-        customerObj.put("email", customer["email"] ?: "")
-        
-        val phone = customer["phone"] as? Map<String, Any?>
-        if (phone != null) {
-          val phoneObj = JSONObject()
-          phoneObj.put("countryCode", phone["countryCode"] ?: "")
-          phoneObj.put("number", phone["number"] ?: "")
-          customerObj.put("phone", phoneObj)
+      val transaction = configuration["transaction"] as? JSONObject ?: return
+      val mode = transaction.optString("mode", "charge")
+
+      if (mode.contains("authorize", ignoreCase = true)) {
+        // Get the charge object
+        val chargeObj = transaction.optJSONObject("charge")
+        if (chargeObj != null) {
+          // Remove charge key and add authorize key with same data
+          transaction.remove("charge")
+          transaction.put("authorize", chargeObj)
         }
-        
-        configuration["customer"] = customerObj
       }
-      
-      // Transaction
-      val transaction = configurations["transaction"] as? Map<String, Any?>
-      if (transaction != null) {
-        val transactionObj = JSONObject()
-        val mode = transaction["mode"] ?: "charge"
-        transactionObj.put("mode", mode)
-        
-        val charge = transaction["charge"] as? Map<String, Any?>
-        if (charge != null) {
-          val chargeObj = JSONObject()
-          chargeObj.put("saveCard", charge["saveCard"] ?: true)
-          chargeObj.put("threeDSecure", charge["threeDSecure"] ?: true)
-          
-          val auto = charge["auto"] as? Map<String, Any?>
-          if (auto != null) {
-            val autoObj = JSONObject()
-            autoObj.put("type", auto["type"] ?: "VOID")
-            autoObj.put("time", auto["time"] ?: 100)
-            chargeObj.put("auto", autoObj)
-          }
-          
-          val redirect = charge["redirect"] as? Map<String, Any?>
-          if (redirect != null) {
-            val redirectObj = JSONObject()
-            redirectObj.put("url", redirect["url"] ?: "")
-            chargeObj.put("redirect", redirectObj)
-          }
-          
-          if (mode.toString().contains("authorize")) {
-            transactionObj.put("authorize", chargeObj)
-          } else {
-            transactionObj.put("charge", chargeObj)
-          }
-        }
-        
-        configuration["transaction"] = transactionObj
-      }
-      
-      // Amount
-      configuration["amount"] = configurations["amount"] ?: "1"
-      
-      // Order
-      val order = configurations["order"] as? Map<String, Any?>
-      if (order != null) {
-        val orderObj = JSONObject()
-        orderObj.put("id", order["id"] ?: "")
-        orderObj.put("currency", order["currency"] ?: "KWD")
-        orderObj.put("amount", order["amount"] ?: "1")
-        
-        val items = order["items"] as? List<Map<String, Any?>>
-        if (items != null) {
-          val itemsArray = JSONArray()
-          for (item in items) {
-            val itemObj = JSONObject()
-            itemObj.put("amount", item["amount"] ?: "1")
-            itemObj.put("currency", item["currency"] ?: "KWD")
-            itemObj.put("name", item["name"] ?: "")
-            itemObj.put("quantity", item["quantity"] ?: 1)
-            itemObj.put("description", item["description"] ?: "")
-            itemsArray.put(itemObj)
-          }
-          orderObj.put("items", itemsArray)
-        }
-        
-        configuration["order"] = orderObj
-      }
-      
-      // Card Options
-      val cardOptions = configurations["cardOptions"] as? Map<String, Any?>
-      if (cardOptions != null) {
-        val cardOptionsObj = JSONObject()
-        cardOptionsObj.put("showBrands", cardOptions["showBrands"] ?: true)
-        cardOptionsObj.put("showLoadingState", cardOptions["showLoadingState"] ?: false)
-        cardOptionsObj.put("collectHolderName", cardOptions["collectHolderName"] ?: true)
-        cardOptionsObj.put("preLoadCardName", cardOptions["preLoadCardName"] ?: "")
-        cardOptionsObj.put("cardNameEditable", cardOptions["cardNameEditable"] ?: true)
-        cardOptionsObj.put("cardFundingSource", cardOptions["cardFundingSource"] ?: "all")
-        cardOptionsObj.put("saveCardOption", "all")
-        cardOptionsObj.put("forceLtr", cardOptions["forceLtr"] ?: false)
-        
-        val alternativeCardInputs = cardOptions["alternativeCardInputs"] as? Map<String, Any?>
-        if (alternativeCardInputs != null) {
-          val altInputsObj = JSONObject()
-          altInputsObj.put("cardScanner", alternativeCardInputs["cardScanner"] ?: true)
-          altInputsObj.put("cardNFC", alternativeCardInputs["cardNFC"] ?: true)
-          cardOptionsObj.put("alternativeCardInputs", altInputsObj)
-        }
-        
-        configuration["cardOptions"] = cardOptionsObj
-      }
-      
-      // Apple Pay availability (always false for Android)
-      configuration["isApplePayAvailableOnClient"] = false
-      
     } catch (e: Exception) {
-      // If there's any error in configuration mapping, log it but continue
-      println("Configuration mapping error: ${e.message}")
+      // If there's any error, continue with default behavior
+      println("Transaction mode handling error: ${e.message}")
     }
-    
-    return configuration
+  }
+
+  /**
+   * Recursively converts a Map to SDK-compatible format (LinkedHashMap with JSONObjects/JSONArrays)
+   * This automatically handles all nested structures without manual field mapping
+   */
+  private fun convertToSDKFormat(map: Map<String, Any?>): LinkedHashMap<String, Any> {
+    val result = LinkedHashMap<String, Any>()
+
+    for ((key, value) in map) {
+      when (value) {
+        is Map<*, *> -> {
+          @Suppress("UNCHECKED_CAST")
+          val nestedMap = value as Map<String, Any?>
+          result[key] = convertMapToJSONObject(nestedMap)
+        }
+        is List<*> -> {
+          result[key] = convertListToJSONArray(value)
+        }
+        null -> {
+          // Skip null values or set empty string based on key type
+          result[key] = ""
+        }
+        else -> {
+          result[key] = value
+        }
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * Recursively converts a Map to JSONObject
+   */
+  private fun convertMapToJSONObject(map: Map<String, Any?>): JSONObject {
+    val jsonObject = JSONObject()
+
+    for ((key, value) in map) {
+      when (value) {
+        is Map<*, *> -> {
+          @Suppress("UNCHECKED_CAST")
+          val nestedMap = value as Map<String, Any?>
+          jsonObject.put(key, convertMapToJSONObject(nestedMap))
+        }
+        is List<*> -> {
+          jsonObject.put(key, convertListToJSONArray(value))
+        }
+        null -> {
+          jsonObject.put(key, "")
+        }
+        else -> {
+          jsonObject.put(key, value)
+        }
+      }
+    }
+
+    return jsonObject
+  }
+
+  /**
+   * Recursively converts a List to JSONArray
+   */
+  private fun convertListToJSONArray(list: List<*>): JSONArray {
+    val jsonArray = JSONArray()
+
+    for (item in list) {
+      when (item) {
+        is Map<*, *> -> {
+          @Suppress("UNCHECKED_CAST")
+          val nestedMap = item as Map<String, Any?>
+          jsonArray.put(convertMapToJSONObject(nestedMap))
+        }
+        is List<*> -> {
+          jsonArray.put(convertListToJSONArray(item))
+        }
+        null -> {
+          jsonArray.put("")
+        }
+        else -> {
+          jsonArray.put(item)
+        }
+      }
+    }
+
+    return jsonArray
   }
 
   private fun createCheckoutDelegate(): TapCheckoutStatusDelegate {
