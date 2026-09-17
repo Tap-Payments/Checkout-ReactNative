@@ -1,8 +1,8 @@
 # checkout-react-native example
 
 A React Native app that exercises the `checkout-react-native` wrapper around
-the Tap Checkout SDK. One screen: a form covering every checkout option (the
-same five steps as Tap's web demo), a **Start Checkout** button that sends what
+the Tap Checkout SDK. One screen: a form covering every checkout option, a
+**Start Checkout** button that sends what
 you picked, and an event log that records every step and SDK callback with the
 time since the tap.
 
@@ -57,13 +57,12 @@ yarn example build:ios       # Debug configuration for the simulator
 
 ## Configuration
 
-The screen is a form with the same five steps as Tap's
-[Web Checkout demo](https://demo.tap.company/v2/sdk/checkout) — **Gateway**,
-**Customer**, **Card**, **Order**, **Transaction** — plus a **Log** tab. Every
+The screen is a form with the same five steps as Tap's web checkout —
+**Gateway**, **Customer**, **Card**, **Order**, **Transaction** — plus a
+**Log** tab. Every
 option the SDK accepts is a control there: dropdowns for enumerated values
-(single or multiple choice, with `ALL`/`AUTO` behaving exclusively like the
-demo), switches for yes/no, and text fields for free text. Conditional fields
-appear the way they do in the demo (authorize type only for `authorize`,
+(single or multiple choice, with `ALL`/`AUTO` behaving exclusively), switches for yes/no, and text fields for free text. Conditional fields
+appear only when relevant (authorize type only for `authorize`,
 agreement details only when "Agreed payment" is on, and so on).
 
 **Start Checkout** builds the SDK object from the current form and sends it; the
@@ -74,8 +73,7 @@ Code:
 - [`src/checkoutConfig.ts`](src/checkoutConfig.ts) — the option lists
   (`PAYMENT_METHODS`, `CURRENCIES`, …), the typed `CheckoutConfiguration` the
   SDK receives, the `FormState` model with `defaultForm`, and
-  `buildConfiguration(form)` which assembles the SDK object the same way the
-  demo does (drops empty lists, collapses `['ALL']` to `'ALL'`, nests the
+  `buildConfiguration(form)` which assembles the SDK object (drops empty lists, collapses `['ALL']` to `'ALL'`, nests the
   transaction options under the selected mode, …).
 - [`src/countries.ts`](src/countries.ts) — the ISO 3166-1 alpha-2 codes
   accepted by `supportedCountries`.
@@ -102,10 +100,7 @@ merchant. If you use your own key, the app id must match what is registered:
 ### All options
 
 The full option reference — every key and the values it accepts — is in the
-[root README](../README.md#configuration). The demo (v0.0.3) also shows
-**Show CVV** and **Show Saved Card CVV** under card options, but it never
-forwards them to the SDK and the SDK has no such keys, so they are
-intentionally not in the form.
+[root README](../README.md#configuration).
 
 ## Notes and troubleshooting
 

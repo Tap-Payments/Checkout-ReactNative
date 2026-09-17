@@ -2,17 +2,16 @@
  * Every option the Tap Checkout SDK accepts, the values it allows, and the
  * form model the example uses to let you pick them.
  *
- * Option lists come from Tap's Web Checkout demo
- * (https://demo.tap.company/v2/sdk/checkout) and the `@tap-payments/checkout-v2`
- * package it is built on. `buildConfiguration()` assembles the SDK object the
- * same way the demo does. The React Native wrapper passes it to the native SDKs
- * unchanged, except that on Android it forces `checkoutMode: 'page'`,
- * `open: true` and `isApplePayAvailableOnClient: false`.
+ * Option lists match Tap's web checkout (`@tap-payments/checkout-v2`).
+ * `buildConfiguration()` assembles the SDK object from the form. The React
+ * Native wrapper passes it to the native SDKs unchanged, except that on
+ * Android it forces `checkoutMode: 'page'`, `open: true` and
+ * `isApplePayAvailableOnClient: false`.
  */
 import { COUNTRY_CODES } from './countries';
 
 // ---------------------------------------------------------------------------
-// Allowed values (as the demo lists them)
+// Allowed values
 // ---------------------------------------------------------------------------
 
 export const LANGUAGES = ['auto', 'en', 'ar'] as const;
@@ -194,7 +193,7 @@ export type CheckoutConfiguration = {
 };
 
 // ---------------------------------------------------------------------------
-// Form model — one field per control in the demo, grouped by its five steps
+// Form model — one field per control, grouped by the five steps
 // ---------------------------------------------------------------------------
 
 export type FormItem = {
@@ -316,7 +315,7 @@ export const defaultForm: FormState = {
   authorizeType: 'VOID',
   autoTimeHours: '100',
   saveCard: true,
-  redirectUrl: 'https://demo.tap.company/v2/sdk/checkout',
+  redirectUrl: 'https://demo.staging.tap.company/v2/sdk/checkout',
   agreedPayment: false,
   agreementType: 'SCHEDULED',
   amountVariability: 'FIXED',
@@ -327,15 +326,15 @@ export const defaultForm: FormState = {
   applePayBillingLabel: 'Recurring',
   applePayBillingAgreement:
     'A localized billing agreement displayed to the user in the payment sheet prior to the payment authorization.',
-  applePayManagementUrl: 'https://demo.tap.company',
-  applePayTokenNotificationUrl: 'https://demo.tap.company',
+  applePayManagementUrl: 'https://example.com',
+  applePayTokenNotificationUrl: 'https://example.com',
   airline: false,
   airlineBookingReference: '',
   isApplePayAvailableOnClient: true,
 };
 
 // ---------------------------------------------------------------------------
-// Form → SDK configuration (mirrors the demo's logic)
+// Form → SDK configuration
 // ---------------------------------------------------------------------------
 
 const num = (s: string, fallback = 0) => {

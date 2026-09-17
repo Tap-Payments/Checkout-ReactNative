@@ -8,8 +8,7 @@ through callbacks.
 - One function: `startCheckout(configuration, callbacks)`
 - TurboModule — requires the New Architecture (the default since React Native 0.76)
 - Same configuration object as Tap's web checkout — see the
-  [configuration reference](#configuration) and the
-  [live demo](https://demo.tap.company/v2/sdk/checkout)
+  [configuration reference](#configuration)
 
 ## Installation
 
@@ -201,7 +200,7 @@ your app if you want the compiler to check your configuration.
 ## Example app
 
 [`example/`](example/README.md) is a React Native 0.87 app with a form for every
-option above (the same five steps as Tap's web demo), a **Start Checkout** button
+option above, a **Start Checkout** button
 that sends what you picked, and an event log with the time of each SDK callback.
 Run it from the repository root:
 

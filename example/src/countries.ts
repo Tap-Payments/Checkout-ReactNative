@@ -1,4 +1,4 @@
-/** ISO 3166-1 alpha-2 codes accepted by `supportedCountries` (same list as the Tap demo). */
+/** ISO 3166-1 alpha-2 codes accepted by `supportedCountries`. */
 export const COUNTRY_CODES = [
   'AF',
   'AL',

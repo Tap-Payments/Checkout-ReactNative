@@ -115,7 +115,7 @@ type PickerProps<T extends string> = {
   searchable?: boolean;
 };
 
-/** Single choice from a list, shown in a modal (like the demo's dropdowns). */
+/** Single choice from a list, shown in a modal. */
 export function SelectField<T extends string>({
   label,
   options,
@@ -157,7 +157,7 @@ export function SelectField<T extends string>({
 
 /**
  * Multiple choice. `exclusive` values (e.g. 'ALL', 'AUTO') clear the rest when
- * picked and are cleared when anything else is picked — same as the demo.
+ * picked and are cleared when anything else is picked.
  */
 export function MultiSelectField<T extends string>({
   label,
