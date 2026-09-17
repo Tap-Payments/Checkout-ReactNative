@@ -1,5 +1,3 @@
-ENV['RCT_NEW_ARCH_ENABLED'] = '1'
-
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -33,5 +31,18 @@ target 'CheckoutReactNativeExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Xcode rejects deployment targets below iOS 15. Some third-party pods
+    # (e.g. SnapKit, Checkout-IOS resource bundles) still declare older ones,
+    # so raise them to the React Native minimum.
+    min_target = min_ios_version_supported
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+        if current && Gem::Version.new(current) < Gem::Version.new(min_target)
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_target
+        end
+      end
+    end
   end
 end

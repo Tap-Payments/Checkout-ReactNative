@@ -2,7 +2,6 @@ package checkoutreactnative.example
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 class MainActivity : ReactActivity() {
@@ -14,9 +13,9 @@ class MainActivity : ReactActivity() {
   override fun getMainComponentName(): String = "CheckoutReactNativeExample"
 
   /**
-   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
-   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
+   * Returns the instance of the [ReactActivityDelegate]. The New Architecture is always enabled,
+   * so the flag-based constructor is no longer needed.
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+      DefaultReactActivityDelegate(this, mainComponentName)
 }

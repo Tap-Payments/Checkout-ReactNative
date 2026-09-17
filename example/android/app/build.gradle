@@ -1,5 +1,8 @@
 apply plugin: "com.android.application"
-apply plugin: "org.jetbrains.kotlin.android"
+// AGP 9+ ships a built-in Kotlin plugin; only apply the standalone one when it isn't present.
+if (project.extensions.findByName("kotlin") == null) {
+    apply plugin: "org.jetbrains.kotlin.android"
+}
 apply plugin: "com.facebook.react"
 
 /**
@@ -19,9 +22,9 @@ react {
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
-    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
+    //   skip the bundling of the JS bundle and the assets. Default is "debug", "debugOptimized".
     //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
-    // debuggableVariants = ["liteDebug", "prodDebug"]
+    // debuggableVariants = ["liteDebug", "liteDebugOptimized", "prodDebug", "prodDebugOptimized"]
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
@@ -102,7 +105,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 }

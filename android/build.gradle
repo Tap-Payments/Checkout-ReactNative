@@ -9,15 +9,20 @@ buildscript {
   }
 
   dependencies {
+    // The consuming app's root project supplies AGP; this only matters when the
+    // library is evaluated on its own.
     classpath "com.android.tools.build:gradle:8.7.2"
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
   }
 }
 
-
 apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
+
+// AGP 9+ ships a built-in Kotlin plugin; only apply the standalone one when it isn't present.
+if (project.extensions.findByName("kotlin") == null) {
+  apply plugin: "kotlin-android"
+}
 
 apply plugin: "com.facebook.react"
 
@@ -32,35 +37,15 @@ android {
 
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
-    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
   }
 
-  buildFeatures {
-    buildConfig true
-  }
-
-  buildTypes {
-    release {
-      minifyEnabled false
-    }
-  }
-
-  lintOptions {
+  lint {
     disable "GradleCompatible"
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
-
-  sourceSets {
-    main {
-      java.srcDirs += [
-        "generated/java",
-        "generated/jni"
-      ]
-    }
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
   }
 }
 
@@ -70,11 +55,8 @@ repositories {
   maven { url 'https://jitpack.io' }
 }
 
-def kotlin_version = getExtOrDefault("kotlinVersion")
-
 dependencies {
   implementation "com.facebook.react:react-android"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation 'com.github.Tap-Payments:Checkout-Android:1.0.6'
 }
 
