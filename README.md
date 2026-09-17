@@ -1,14 +1,8 @@
 # checkout-react-native
 
-React Native wrapper for the [Tap Payments](https://www.tap.company) Checkout SDK.
-It presents Tap's hosted checkout sheet natively on iOS (`Checkout-IOS`) and
-Android (`Checkout-Android`) from a single JavaScript call, and reports the result
-through callbacks.
-
 - One function: `startCheckout(configuration, callbacks)`
 - TurboModule — requires the New Architecture (the default since React Native 0.76)
-- Same configuration object as Tap's web checkout — see the
-  [configuration reference](#configuration)
+- [configuration reference](#configuration)
 
 ## Installation
 
@@ -131,16 +125,6 @@ interface CheckoutCallbacks {
   onClose: () => void;              // the customer dismissed the sheet
 }
 ```
-
-`startCheckout` returns immediately; everything happens through the callbacks.
-The sheet takes a few seconds to appear after the call because the SDK loads
-Tap's hosted checkout page — show your own loading state until `onReady`
-(on iOS nothing is drawn before that). See the
-[example app](example/README.md#notes-and-troubleshooting) for what's involved.
-
-The wrapper passes the configuration through unchanged, with two Android
-adjustments: `checkoutMode` is always `'page'` and
-`isApplePayAvailableOnClient` is always `false`.
 
 ## Configuration
 
