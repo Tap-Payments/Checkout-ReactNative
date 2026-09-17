@@ -127,6 +127,10 @@ merchant. If you use your own key, the app id must match what is registered:
 | `cardOptions.alternativeCardInputs` | `{ cardScanner, cardNFC }` | |
 | `isApplePayAvailableOnClient` | boolean | iOS only; the Android wrapper sets it to `false` |
 
+The demo (v0.0.3) also shows **Show CVV** and **Show Saved Card CVV** under card
+options, but it never forwards them to the SDK and the SDK has no such keys, so
+they are intentionally not part of `CheckoutConfiguration`.
+
 ## What the screen does
 
 - **Start Checkout** calls `startCheckout(configurations, callbacks)`. The
