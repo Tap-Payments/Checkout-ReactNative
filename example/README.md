@@ -1,9 +1,10 @@
 # checkout-react-native example
 
-A minimal React Native app that exercises the `checkout-react-native` wrapper
-around the Tap Checkout SDK. It has one screen: a **Start Checkout** button that
-opens the Tap checkout sheet, plus an on-screen event log that records every
-step and SDK callback with the time since the tap.
+A React Native app that exercises the `checkout-react-native` wrapper around
+the Tap Checkout SDK. One screen: a form covering every checkout option (the
+same five steps as Tap's web demo), a **Start Checkout** button that sends what
+you picked, and an event log that records every step and SDK callback with the
+time since the tap.
 
 The example is a Yarn workspace of this repository and consumes the library
 straight from `../src`, so changes to the wrapper show up without publishing.
@@ -56,22 +57,40 @@ yarn example build:ios       # Debug configuration for the simulator
 
 ## Configuration
 
-Everything the SDK receives lives in [`src/checkoutConfig.ts`](src/checkoutConfig.ts):
-a typed `CheckoutConfiguration` describing every option and the values it
-accepts, and the `checkoutConfiguration` object the example actually sends.
-The option list was taken from Tap's [Web Checkout demo](https://demo.tap.company/v2/sdk/checkout)
-and the `@tap-payments/checkout-v2` package behind it; the wrapper forwards the
-object to the native SDKs unchanged.
+The screen is a form with the same five steps as Tap's
+[Web Checkout demo](https://demo.tap.company/v2/sdk/checkout) — **Gateway**,
+**Customer**, **Card**, **Order**, **Transaction** — plus a **Log** tab. Every
+option the SDK accepts is a control there: dropdowns for enumerated values
+(single or multiple choice, with `ALL`/`AUTO` behaving exclusively like the
+demo), switches for yes/no, and text fields for free text. Conditional fields
+appear the way they do in the demo (authorize type only for `authorize`,
+agreement details only when "Agreed payment" is on, and so on).
+
+**Start Checkout** builds the SDK object from the current form and sends it; the
+exact object is printed in the Log tab.
+
+Code:
+
+- [`src/checkoutConfig.ts`](src/checkoutConfig.ts) — the option lists
+  (`PAYMENT_METHODS`, `CURRENCIES`, …), the typed `CheckoutConfiguration` the
+  SDK receives, the `FormState` model with `defaultForm`, and
+  `buildConfiguration(form)` which assembles the SDK object the same way the
+  demo does (drops empty lists, collapses `['ALL']` to `'ALL'`, nests the
+  transaction options under the selected mode, …).
+- [`src/countries.ts`](src/countries.ts) — the ISO 3166-1 alpha-2 codes
+  accepted by `supportedCountries`.
+- [`src/components/fields.tsx`](src/components/fields.tsx) — the form controls
+  (no third-party dependencies).
+- [`src/App.tsx`](src/App.tsx) — the screen, the loading state and the event log.
 
 ### Merchant
 
-Replace the test values in `gateway`:
+Enter your key and merchant id in the **Gateway** tab, or change the defaults
+in `defaultForm`:
 
 ```ts
-gateway: {
-  publicKey: 'pk_test_…',   // Tap public key (test or live)
-  merchantId: '',           // Tap merchant id
-},
+publicKey: 'pk_test_…',   // Tap public key (test or live)
+merchantId: '',           // Tap merchant id
 ```
 
 Tap validates the public key against the app identifier registered for the
@@ -82,76 +101,11 @@ merchant. If you use your own key, the app id must match what is registered:
 
 ### All options
 
-| Key | Values | Notes |
-|---|---|---|
-| `hashString` | string | Optional request hash generated server-side with your secret key |
-| `language` | `en` · `ar` | Omit to follow the device language |
-| `themeMode` | `light` · `dark` · `light_mono` · `dark_colored` | Omit to follow the device appearance |
-| `checkoutMode` | `popup` · `page` | Web only; the Android wrapper always uses `page` |
-| `paymentType` | `ALL` · `WEB` · `CARD` · `DEVICE` | |
-| `supportedPaymentMethods` | `ALL` or a list of `AMERICAN_EXPRESS` `APPLE_PAY` `BENEFIT` `BENEFITPAY` `CAREEMPAY` `FAWRY` `GOOGLE_PAY` `KNET` `MADA` `MASTERCARD` `MEEZA` `OMANNET` `PAYPAL` `POST_PAY` `NAPS` `STC_PAY` `TABBY` `VISA` | |
-| `selectedCurrency` | `KWD` `BHD` `SAR` `AED` `OMR` `QAR` `EGP` `GBP` `USD` `EUR` | Currency the customer pays in |
-| `supportedCurrencies` | `ALL` · `AUTO` · list of currencies | `AUTO` derives the list from the merchant account |
-| `supportedRegions` | list of `LOCAL` `REGIONAL` `GLOBAL` | Empty = no restriction |
-| `supportedCountries` | list of ISO 3166-1 alpha-2 codes (`KW`, `SA`, `AE`, `BH`, …) | Empty = no restriction |
-| `supportedPaymentTypes` | list of `CARD` `DEVICE_WALLET` `EXPRESS_CHECKOUT_WALLET` `PASS_THRU_WALLET` `STORED_VALUE_WALLET` `CASH_WALLET` `BNPL` | Empty = no restriction |
-| `supportedSchemes` | list of `BENEFIT` `VISA` `AMEX` `MASTERCARD` `MADA` `MEEZA` `OMANNET` | Empty = no restriction |
-| `gateway.publicKey` | string | Required |
-| `gateway.merchantId` | string | |
-| `customer.id` | string | Existing Tap customer id; makes the other customer fields optional |
-| `customer.firstName` / `lastName` / `email` | string | |
-| `customer.phone` | `{ countryCode, number }` | e.g. `{ countryCode: '965', number: '55567890' }` |
-| `transaction.mode` | `charge` · `authorize` | |
-| `transaction.charge` / `transaction.authorize` | object | Options for the selected mode, same shape for both: |
-| &nbsp;&nbsp;`saveCard` | boolean | |
-| &nbsp;&nbsp;`auto` | `{ type: 'CAPTURE' \| 'VOID', time }` | authorize only — what happens automatically after `time` hours |
-| &nbsp;&nbsp;`redirect.url` | URL | Return URL for redirect-based methods |
-| &nbsp;&nbsp;`threeDSecure` | boolean | |
-| &nbsp;&nbsp;`agreement` | `{ type: 'SCHEDULED' \| 'UNSCHEDULED', amount_variability?: 'FIXED' \| 'VARIABLE' }` | Recurring-payment agreement |
-| &nbsp;&nbsp;`subscription` | `{ type, amount_variability, txn_count }` | `txn_count: 0` when the number of payments is undefined |
-| &nbsp;&nbsp;`airline.reference.booking` | string | |
-| &nbsp;&nbsp;`applePayRecurringPaymentRequest` | object | Apple Pay recurring sheet details (`paymentDescription`, `regularBilling`, `billingAgreement`, `managementURL`, `tokenNotificationURL`) |
-| `amount` | number / string | Total |
-| `order.id` | string | |
-| `order.currency` / `order.amount` | | Should match `selectedCurrency` / `amount` |
-| `order.items[]` | `{ amount, currency, name, quantity, description? }` | At least one item |
-| `order.discount` | `{ type: 'F' \| 'P', value }` | `F` fixed amount, `P` percentage |
-| `cardOptions.showBrands` | boolean | Show the accepted-scheme logos |
-| `cardOptions.showLoadingState` | boolean | |
-| `cardOptions.collectHolderName` | boolean | |
-| `cardOptions.preLoadCardName` | string | Pre-filled holder name |
-| `cardOptions.cardNameEditable` | boolean | |
-| `cardOptions.cardFundingSource` | `all` · `credit` · `debit` | |
-| `cardOptions.saveCardOption` | `all` · `merchant` · `tap` · `none` | Who may offer to save the card |
-| `cardOptions.forceLtr` | boolean | Keep the card field left-to-right in Arabic |
-| `cardOptions.alternativeCardInputs` | `{ cardScanner, cardNFC }` | |
-| `isApplePayAvailableOnClient` | boolean | iOS only; the Android wrapper sets it to `false` |
-
-The demo (v0.0.3) also shows **Show CVV** and **Show Saved Card CVV** under card
-options, but it never forwards them to the SDK and the SDK has no such keys, so
-they are intentionally not part of `CheckoutConfiguration`.
-
-## What the screen does
-
-- **Start Checkout** calls `startCheckout(configurations, callbacks)`. The
-  hosted checkout takes several seconds to become ready and draws nothing until
-  then (on iOS the sheet is fully transparent), so the button shows a spinner and
-  "Opening…" and stays disabled until the SDK reports `onReady`, `onClose` or
-  `onError`.
-- **Event log** lists the tap, the configuration sent to the SDK, the native
-  call returning, and every callback with its payload. Each entry shows the
-  clock time and the time since the tap. Entries are mirrored to `console.log`
-  as `[checkout +X ms] …`, so they also appear in Metro, logcat and Xcode.
-
-A typical Android run looks like this — note that the wrapper and native bridge
-cost ~10 ms; the rest is the SDK loading its hosted page:
-
-```
-+0 ms     Start Checkout tapped (android 36)
-+2 ms     startCheckout() called  { publicKey, merchantId, amount, currency, … }
-+8 ms     startCheckout() returned — waiting for the SDK
-+5.6 s    onReady — checkout sheet is visible
-```
+The full option reference — every key and the values it accepts — is in the
+[root README](../README.md#configuration). The demo (v0.0.3) also shows
+**Show CVV** and **Show Saved Card CVV** under card options, but it never
+forwards them to the SDK and the SDK has no such keys, so they are
+intentionally not in the form.
 
 ## Notes and troubleshooting
 

@@ -1,190 +1,182 @@
 /**
- * Every option the Tap Checkout SDK accepts, with the values it allows.
+ * Every option the Tap Checkout SDK accepts, the values it allows, and the
+ * form model the example uses to let you pick them.
  *
- * Extracted from Tap's Web Checkout demo (https://demo.tap.company/v2/sdk/checkout)
- * and the `@tap-payments/checkout-v2` package it is built on. The React Native
- * wrapper passes this object to the native SDKs unchanged, except that on
- * Android it forces `checkoutMode: 'page'`, `open: true` and
- * `isApplePayAvailableOnClient: false`.
+ * Option lists come from Tap's Web Checkout demo
+ * (https://demo.tap.company/v2/sdk/checkout) and the `@tap-payments/checkout-v2`
+ * package it is built on. `buildConfiguration()` assembles the SDK object the
+ * same way the demo does. The React Native wrapper passes it to the native SDKs
+ * unchanged, except that on Android it forces `checkoutMode: 'page'`,
+ * `open: true` and `isApplePayAvailableOnClient: false`.
  */
+import { COUNTRY_CODES } from './countries';
 
 // ---------------------------------------------------------------------------
-// Allowed values
+// Allowed values (as the demo lists them)
 // ---------------------------------------------------------------------------
 
-export type Language = 'en' | 'ar';
+export const LANGUAGES = ['auto', 'en', 'ar'] as const;
+export const THEMES = [
+  'light',
+  'dark',
+  'light_mono',
+  'dark_colored',
+  'auto',
+] as const;
+export const CHECKOUT_MODES = ['popup', 'page'] as const;
+export const PAYMENT_TYPES = ['ALL', 'WEB', 'CARD', 'DEVICE'] as const;
+export const PAYMENT_METHODS = [
+  'ALL',
+  'AMERICAN_EXPRESS',
+  'APPLE_PAY',
+  'BENEFIT',
+  'BENEFITPAY',
+  'CAREEMPAY',
+  'FAWRY',
+  'GOOGLE_PAY',
+  'KNET',
+  'MADA',
+  'MASTERCARD',
+  'MEEZA',
+  'OMANNET',
+  'PAYPAL',
+  'POST_PAY',
+  'NAPS',
+  'STC_PAY',
+  'TABBY',
+  'VISA',
+] as const;
+export const CURRENCIES = [
+  'KWD',
+  'BHD',
+  'SAR',
+  'AED',
+  'OMR',
+  'EGP',
+  'GBP',
+  'USD',
+  'EUR',
+] as const;
+export const SUPPORTED_CURRENCIES = ['ALL', 'AUTO', ...CURRENCIES] as const;
+export const REGIONS = ['LOCAL', 'REGIONAL', 'GLOBAL'] as const;
+export const SUPPORTED_PAYMENT_TYPES = [
+  'CARD',
+  'DEVICE_WALLET',
+  'EXPRESS_CHECKOUT_WALLET',
+  'PASS_THRU_WALLET',
+  'STORED_VALUE_WALLET',
+  'CASH_WALLET',
+  'BNPL',
+] as const;
+export const SCHEMES = [
+  'BENEFIT',
+  'VISA',
+  'AMEX',
+  'MASTERCARD',
+  'MADA',
+  'MEEZA',
+  'OMANNET',
+] as const;
+export const TRANSACTION_MODES = ['charge', 'authorize'] as const;
+export const AUTHORIZE_TYPES = ['CAPTURE', 'VOID'] as const;
+export const AGREEMENT_TYPES = ['SCHEDULED', 'UNSCHEDULED'] as const;
+export const AMOUNT_VARIABILITIES = ['FIXED', 'VARIABLE'] as const;
+export const NUMBER_OF_PAYMENTS = ['Undefined', 'Defined'] as const;
+export const CARD_FUNDING_SOURCES = ['all', 'credit', 'debit'] as const;
+export const SAVE_CARD_OPTIONS = ['all', 'merchant', 'tap', 'none'] as const;
+export const DISCOUNT_TYPES = ['none', 'F', 'P'] as const;
+export { COUNTRY_CODES };
 
-/** Omit `themeMode` to follow the device appearance ("auto" in the demo). */
-export type ThemeMode = 'light' | 'dark' | 'light_mono' | 'dark_colored';
-
-/** Web-only. The Android wrapper always uses 'page'. */
-export type CheckoutMode = 'popup' | 'page';
-
-export type PaymentType = 'ALL' | 'WEB' | 'CARD' | 'DEVICE';
-
-export type PaymentMethod =
-  | 'AMERICAN_EXPRESS'
-  | 'APPLE_PAY'
-  | 'BENEFIT'
-  | 'BENEFITPAY'
-  | 'CAREEMPAY'
-  | 'FAWRY'
-  | 'GOOGLE_PAY'
-  | 'KNET'
-  | 'MADA'
-  | 'MASTERCARD'
-  | 'MEEZA'
-  | 'OMANNET'
-  | 'PAYPAL'
-  | 'POST_PAY'
-  | 'NAPS'
-  | 'STC_PAY'
-  | 'TABBY'
-  | 'VISA';
-
-export type Currency =
-  | 'KWD'
-  | 'BHD'
-  | 'SAR'
-  | 'AED'
-  | 'OMR'
-  | 'QAR'
-  | 'EGP'
-  | 'GBP'
-  | 'USD'
-  | 'EUR';
-
-export type SupportedRegion = 'LOCAL' | 'REGIONAL' | 'GLOBAL';
-
-/** ISO 3166-1 alpha-2 country code, e.g. 'KW', 'SA', 'AE', 'BH', 'EG', 'OM', 'QA'. */
-export type CountryCode = string;
-
-export type SupportedPaymentType =
-  | 'CARD'
-  | 'DEVICE_WALLET'
-  | 'EXPRESS_CHECKOUT_WALLET'
-  | 'PASS_THRU_WALLET'
-  | 'STORED_VALUE_WALLET'
-  | 'CASH_WALLET'
-  | 'BNPL';
-
-export type CardScheme =
-  | 'BENEFIT'
-  | 'VISA'
-  | 'AMEX'
-  | 'MASTERCARD'
-  | 'MADA'
-  | 'MEEZA'
-  | 'OMANNET';
-
-export type TransactionMode = 'charge' | 'authorize';
-
-/** What to do automatically after an authorize: capture it or void it. */
-export type AutoType = 'CAPTURE' | 'VOID';
-
-export type AgreementType = 'SCHEDULED' | 'UNSCHEDULED';
-export type AmountVariability = 'FIXED' | 'VARIABLE';
-
-export type CardFundingSource = 'all' | 'credit' | 'debit';
-
-/** Who may offer to save the card: everyone, the merchant only, Tap only, or nobody. */
-export type SaveCardOption = 'all' | 'merchant' | 'tap' | 'none';
-
-/** 'F' = fixed amount, 'P' = percentage. */
-export type DiscountType = 'F' | 'P';
+export type Language = (typeof LANGUAGES)[number];
+export type Theme = (typeof THEMES)[number];
+export type CheckoutMode = (typeof CHECKOUT_MODES)[number];
+export type PaymentType = (typeof PAYMENT_TYPES)[number];
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+export type Currency = (typeof CURRENCIES)[number];
+export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
+export type Region = (typeof REGIONS)[number];
+export type CountryCode = (typeof COUNTRY_CODES)[number];
+export type SupportedPaymentType = (typeof SUPPORTED_PAYMENT_TYPES)[number];
+export type Scheme = (typeof SCHEMES)[number];
+export type TransactionMode = (typeof TRANSACTION_MODES)[number];
+export type AuthorizeType = (typeof AUTHORIZE_TYPES)[number];
+export type AgreementType = (typeof AGREEMENT_TYPES)[number];
+export type AmountVariability = (typeof AMOUNT_VARIABILITIES)[number];
+export type NumberOfPayments = (typeof NUMBER_OF_PAYMENTS)[number];
+export type CardFundingSource = (typeof CARD_FUNDING_SOURCES)[number];
+export type SaveCardOption = (typeof SAVE_CARD_OPTIONS)[number];
+export type DiscountType = (typeof DISCOUNT_TYPES)[number];
 
 // ---------------------------------------------------------------------------
-// Shape
+// What the SDK receives
 // ---------------------------------------------------------------------------
 
 export type OrderItem = {
-  amount: number | string;
+  amount: number;
   currency: Currency;
   name: string;
   quantity: number;
   description?: string;
 };
 
-export type Agreement = {
-  type: AgreementType;
-  /** Only meaningful for SCHEDULED agreements. */
-  amount_variability?: AmountVariability;
-};
-
-export type Subscription = {
-  type: AgreementType;
-  amount_variability: AmountVariability;
-  /** Number of payments; 0 when the count is undefined. */
-  txn_count: number;
-};
-
-export type ApplePayRecurringPaymentRequest = {
-  paymentDescription: string;
-  regularBilling: {
-    label: string;
-    paymentTiming: 'recurring';
-    recurringPaymentStartDate: string;
-  };
-  billingAgreement: string;
-  managementURL: string;
-  tokenNotificationURL: string;
-};
-
-/** Settings for the chosen transaction mode (the same shape for charge and authorize). */
 export type TransactionOptions = {
-  saveCard?: boolean;
-  /** authorize only: what to do automatically and after how many hours. */
-  auto?: { type: AutoType; time: number };
-  /** Where the customer is sent after a redirect-based payment. */
-  redirect?: { url: string };
-  threeDSecure?: boolean;
-  agreement?: Agreement;
-  subscription?: Subscription;
+  saveCard: boolean;
+  /** authorize only: what happens automatically after `time` hours. */
+  auto: { type: AuthorizeType; time: number };
+  /** Where the customer returns after a redirect-based payment. */
+  redirect: { url: string };
+  threeDSecure: boolean;
+  agreement?: { type: AgreementType; amount_variability?: AmountVariability };
+  subscription?: {
+    type: AgreementType;
+    amount_variability: AmountVariability;
+    txn_count: number;
+  };
   airline?: { reference: { booking: string } };
-  applePayRecurringPaymentRequest?: ApplePayRecurringPaymentRequest;
+  applePayRecurringPaymentRequest?: {
+    paymentDescription: string;
+    regularBilling: {
+      label: string;
+      paymentTiming: 'recurring';
+      recurringPaymentStartDate: string;
+    };
+    billingAgreement: string;
+    managementURL: string;
+    tokenNotificationURL: string;
+  };
 };
 
 export type CheckoutConfiguration = {
-  /** Optional integrity hash of the request, generated server-side with your secret key. */
   hashString?: string;
-  /** Omit to follow the device language. */
-  language?: Language;
-  /** Omit to follow the device appearance. */
-  themeMode?: ThemeMode;
-  checkoutMode?: CheckoutMode;
+  language?: Exclude<Language, 'auto'>;
+  themeMode?: Exclude<Theme, 'auto'>;
+  checkoutMode: CheckoutMode;
   paymentType: PaymentType;
   supportedPaymentMethods: 'ALL' | PaymentMethod[];
   selectedCurrency: Currency;
-  /** 'ALL', 'AUTO' (derive from the merchant), or an explicit list. */
   supportedCurrencies: 'ALL' | 'AUTO' | Currency[];
-  supportedRegions?: SupportedRegion[];
+  supportedRegions?: Region[];
   supportedCountries?: CountryCode[];
   supportedPaymentTypes?: SupportedPaymentType[];
-  supportedSchemes?: CardScheme[];
-  gateway: {
-    publicKey: string;
-    merchantId?: string;
-  };
+  supportedSchemes?: Scheme[];
+  gateway: { publicKey: string; merchantId?: string };
   customer: {
-    /** Existing Tap customer id; when set, the other fields become optional. */
     id?: string;
     firstName: string;
-    lastName?: string;
-    email?: string;
-    phone?: { countryCode: string; number: string };
+    lastName: string;
+    email: string;
+    phone: { countryCode: string; number: string };
   };
-  transaction: {
-    mode: TransactionMode;
-    charge?: TransactionOptions;
-    authorize?: TransactionOptions;
-  };
-  amount: number | string;
+  transaction: { mode: TransactionMode } & Partial<
+    Record<TransactionMode, TransactionOptions>
+  >;
+  amount: number;
   order: {
-    id?: string;
+    id: string;
     currency: Currency;
-    amount: number | string;
+    amount: number;
     items: OrderItem[];
-    discount?: { type: DiscountType; value: number };
+    discount?: { type: 'F' | 'P'; value: number };
   };
   cardOptions: {
     showBrands: boolean;
@@ -195,101 +187,276 @@ export type CheckoutConfiguration = {
     cardFundingSource: CardFundingSource;
     saveCardOption: SaveCardOption;
     forceLtr: boolean;
-    alternativeCardInputs?: { cardScanner: boolean; cardNFC: boolean };
+    alternativeCardInputs: { cardScanner: boolean; cardNFC: boolean };
   };
   /** iOS only; the Android wrapper sets it to false. */
-  isApplePayAvailableOnClient?: boolean;
+  isApplePayAvailableOnClient: boolean;
 };
 
 // ---------------------------------------------------------------------------
-// The configuration this example sends
+// Form model — one field per control in the demo, grouped by its five steps
 // ---------------------------------------------------------------------------
 
-export const TAP_PUBLIC_KEY = 'pk_test_ohzQrUWRnTkCLD1cqMeudyjX';
-export const TAP_MERCHANT_ID = '';
+export type FormItem = {
+  name: string;
+  description: string;
+  quantity: string;
+  amount: string;
+};
 
-const CURRENCY: Currency = 'KWD';
-const AMOUNT = '5';
+export type FormState = {
+  // Step 1 — gateway & acceptance
+  publicKey: string;
+  merchantId: string;
+  supportedCurrencies: SupportedCurrency[];
+  paymentType: PaymentType;
+  supportedPaymentMethods: PaymentMethod[];
+  selectedCurrency: Currency;
+  language: Language;
+  supportedRegions: Region[];
+  supportedCountries: CountryCode[];
+  supportedPaymentTypes: SupportedPaymentType[];
+  supportedSchemes: Scheme[];
+  // Step 2 — customer
+  customerId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  countryCode: string;
+  phoneNumber: string;
+  // Step 3 — card options
+  showBrands: boolean;
+  showLoadingState: boolean;
+  collectHolderName: boolean;
+  preLoadCardName: string;
+  cardNameEditable: boolean;
+  cardFundingSource: CardFundingSource;
+  saveCardOption: SaveCardOption;
+  forceLtr: boolean;
+  cardScanner: boolean;
+  cardNFC: boolean;
+  // Step 4 — order
+  orderId: string;
+  discountType: DiscountType;
+  discountValue: string;
+  items: FormItem[];
+  // Step 5 — transaction
+  transactionMode: TransactionMode;
+  theme: Theme;
+  checkoutMode: CheckoutMode;
+  threeDSecure: boolean;
+  hashString: string;
+  authorizeType: AuthorizeType;
+  autoTimeHours: string;
+  saveCard: boolean;
+  redirectUrl: string;
+  agreedPayment: boolean;
+  agreementType: AgreementType;
+  amountVariability: AmountVariability;
+  numberOfPayments: NumberOfPayments;
+  txnCount: string;
+  applePayPaymentDescription: string;
+  applePayBillingLabel: string;
+  applePayBillingAgreement: string;
+  applePayManagementUrl: string;
+  applePayTokenNotificationUrl: string;
+  airline: boolean;
+  airlineBookingReference: string;
+  isApplePayAvailableOnClient: boolean;
+};
 
-export const checkoutConfiguration: CheckoutConfiguration = {
-  hashString: '',
-  language: 'en',
-  themeMode: 'light',
-  checkoutMode: 'page',
-
-  // Which payment options to offer. 'ALL' lets the merchant account decide;
-  // narrow any of these to restrict the list, e.g.
-  //   paymentType: 'CARD', supportedPaymentMethods: ['VISA', 'MASTERCARD', 'MADA']
+export const defaultForm: FormState = {
+  publicKey: 'pk_test_ohzQrUWRnTkCLD1cqMeudyjX',
+  merchantId: '',
+  supportedCurrencies: ['ALL'],
   paymentType: 'ALL',
-  supportedPaymentMethods: 'ALL',
-  selectedCurrency: CURRENCY,
-  supportedCurrencies: 'ALL',
+  supportedPaymentMethods: ['ALL'],
+  selectedCurrency: 'KWD',
+  language: 'en',
   supportedRegions: [],
   supportedCountries: [],
   supportedPaymentTypes: [],
   supportedSchemes: [],
 
-  gateway: {
-    publicKey: TAP_PUBLIC_KEY,
-    merchantId: TAP_MERCHANT_ID,
-  },
+  customerId: '',
+  firstName: 'Ahmed',
+  lastName: 'Sharkawy',
+  email: 'example@gmail.com',
+  countryCode: '20',
+  phoneNumber: '1099137773',
 
-  customer: {
-    firstName: 'Android',
-    lastName: 'Test',
-    email: 'example@gmail.com',
-    phone: { countryCode: '965', number: '55567890' },
-  },
+  showBrands: true,
+  showLoadingState: false,
+  collectHolderName: true,
+  preLoadCardName: '',
+  cardNameEditable: true,
+  cardFundingSource: 'all',
+  saveCardOption: 'all',
+  forceLtr: false,
+  cardScanner: true,
+  cardNFC: true,
 
-  // Use `mode: 'authorize'` with an `authorize` block of the same shape to
-  // authorize now and capture (or void) later.
-  transaction: {
-    mode: 'charge',
-    charge: {
-      saveCard: true,
-      auto: { type: 'VOID', time: 100 },
-      redirect: { url: 'https://demo.tap.company/v2/sdk/checkout' },
-      threeDSecure: true,
-      // Recurring / subscription payments. Remove both for a one-off payment.
-      subscription: {
-        type: 'SCHEDULED',
-        amount_variability: 'FIXED',
-        txn_count: 0,
-      },
-      airline: {
-        reference: { booking: '' },
-      },
+  orderId: '',
+  discountType: 'none',
+  discountValue: '0',
+  items: [
+    {
+      name: 'Item Title 1',
+      description: 'item description 1',
+      quantity: '1',
+      amount: '5',
     },
-  },
+  ],
 
-  amount: AMOUNT,
-  order: {
-    id: '',
-    currency: CURRENCY,
-    amount: AMOUNT,
-    items: [
-      {
-        amount: AMOUNT,
-        currency: CURRENCY,
-        name: 'Item Title 1',
-        quantity: 1,
-        description: 'item description 1',
-      },
-    ],
-    // discount: { type: 'P', value: 10 },
-  },
-
-  cardOptions: {
-    showBrands: true,
-    showLoadingState: false,
-    collectHolderName: true,
-    preLoadCardName: '',
-    cardNameEditable: true,
-    cardFundingSource: 'all',
-    saveCardOption: 'all',
-    forceLtr: false,
-    alternativeCardInputs: { cardScanner: true, cardNFC: true },
-  },
-
+  transactionMode: 'charge',
+  theme: 'light',
+  checkoutMode: 'page',
+  threeDSecure: true,
+  hashString: '',
+  authorizeType: 'VOID',
+  autoTimeHours: '100',
+  saveCard: true,
+  redirectUrl: 'https://demo.tap.company/v2/sdk/checkout',
+  agreedPayment: false,
+  agreementType: 'SCHEDULED',
+  amountVariability: 'FIXED',
+  numberOfPayments: 'Undefined',
+  txnCount: '1',
+  applePayPaymentDescription:
+    'A description of the recurring payment to display to the user in the payment sheet.',
+  applePayBillingLabel: 'Recurring',
+  applePayBillingAgreement:
+    'A localized billing agreement displayed to the user in the payment sheet prior to the payment authorization.',
+  applePayManagementUrl: 'https://demo.tap.company',
+  applePayTokenNotificationUrl: 'https://demo.tap.company',
+  airline: false,
+  airlineBookingReference: '',
   isApplePayAvailableOnClient: true,
 };
+
+// ---------------------------------------------------------------------------
+// Form → SDK configuration (mirrors the demo's logic)
+// ---------------------------------------------------------------------------
+
+const num = (s: string, fallback = 0) => {
+  const n = Number(s);
+  return Number.isFinite(n) ? n : fallback;
+};
+const listOrUndefined = <T>(list: T[]) => (list.length ? list : undefined);
+const emptyToUndefined = (s: string) =>
+  s.trim().length ? s.trim() : undefined;
+
+export const orderTotal = (items: FormItem[]) =>
+  Math.round(
+    items.reduce((sum, i) => sum + num(i.amount) * num(i.quantity, 1), 0) * 1000
+  ) / 1000;
+
+export function buildConfiguration(f: FormState): CheckoutConfiguration {
+  const total = orderTotal(f.items);
+  const discountValue = num(f.discountValue);
+
+  const agreement = f.agreedPayment
+    ? f.agreementType === 'UNSCHEDULED'
+      ? { type: 'UNSCHEDULED' as const }
+      : { type: f.agreementType, amount_variability: f.amountVariability }
+    : undefined;
+
+  const subscription =
+    f.agreedPayment && f.agreementType !== 'UNSCHEDULED'
+      ? {
+          type: f.agreementType,
+          amount_variability: f.amountVariability,
+          txn_count: f.numberOfPayments === 'Undefined' ? 0 : num(f.txnCount),
+        }
+      : undefined;
+
+  const transactionOptions: TransactionOptions = {
+    saveCard: f.saveCard,
+    auto: { type: f.authorizeType, time: num(f.autoTimeHours, 100) },
+    redirect: { url: f.redirectUrl },
+    threeDSecure: f.threeDSecure,
+    agreement,
+    subscription,
+    airline: f.airline
+      ? { reference: { booking: f.airlineBookingReference } }
+      : undefined,
+    applePayRecurringPaymentRequest: f.agreedPayment
+      ? {
+          paymentDescription: f.applePayPaymentDescription,
+          regularBilling: {
+            label: f.applePayBillingLabel,
+            paymentTiming: 'recurring',
+            recurringPaymentStartDate: new Date().toISOString(),
+          },
+          billingAgreement: f.applePayBillingAgreement,
+          managementURL: f.applePayManagementUrl,
+          tokenNotificationURL: f.applePayTokenNotificationUrl,
+        }
+      : undefined,
+  };
+
+  return {
+    hashString: emptyToUndefined(f.hashString),
+    language: f.language === 'auto' ? undefined : f.language,
+    themeMode: f.theme === 'auto' ? undefined : f.theme,
+    checkoutMode: f.checkoutMode,
+    paymentType: f.paymentType,
+    supportedPaymentMethods: f.supportedPaymentMethods.includes('ALL')
+      ? 'ALL'
+      : f.supportedPaymentMethods,
+    selectedCurrency: f.selectedCurrency,
+    supportedCurrencies: f.supportedCurrencies.includes('ALL')
+      ? 'ALL'
+      : f.supportedCurrencies.includes('AUTO')
+        ? 'AUTO'
+        : (f.supportedCurrencies as Currency[]),
+    supportedRegions: listOrUndefined(f.supportedRegions),
+    supportedCountries: listOrUndefined(f.supportedCountries),
+    supportedPaymentTypes: listOrUndefined(f.supportedPaymentTypes),
+    supportedSchemes: listOrUndefined(f.supportedSchemes),
+    gateway: {
+      publicKey: f.publicKey.trim(),
+      merchantId: emptyToUndefined(f.merchantId),
+    },
+    customer: {
+      id: emptyToUndefined(f.customerId),
+      firstName: f.firstName,
+      lastName: f.lastName,
+      email: f.email,
+      phone: { countryCode: f.countryCode, number: f.phoneNumber },
+    },
+    transaction: {
+      mode: f.transactionMode,
+      [f.transactionMode]: transactionOptions,
+    },
+    amount: total,
+    order: {
+      id: f.orderId,
+      currency: f.selectedCurrency,
+      amount: total,
+      items: f.items.map((i) => ({
+        name: i.name,
+        description: i.description,
+        quantity: num(i.quantity, 1),
+        amount: num(i.amount),
+        currency: f.selectedCurrency,
+      })),
+      discount:
+        f.discountType !== 'none' && discountValue > 0
+          ? { type: f.discountType, value: discountValue }
+          : undefined,
+    },
+    cardOptions: {
+      showBrands: f.showBrands,
+      showLoadingState: f.showLoadingState,
+      collectHolderName: f.collectHolderName,
+      preLoadCardName: f.preLoadCardName,
+      cardNameEditable: f.cardNameEditable,
+      cardFundingSource: f.cardFundingSource,
+      saveCardOption: f.saveCardOption,
+      forceLtr: f.forceLtr,
+      alternativeCardInputs: { cardScanner: f.cardScanner, cardNFC: f.cardNFC },
+    },
+    isApplePayAvailableOnClient: f.isApplePayAvailableOnClient,
+  };
+}
