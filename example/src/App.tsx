@@ -11,6 +11,7 @@ import {
 import { startCheckout } from 'checkout-react-native';
 import type { CheckoutCallbacks } from 'checkout-react-native';
 import type { ScrollViewInstance } from 'react-native';
+import { checkoutConfiguration } from './checkoutConfig';
 
 type LogEntry = {
   id: number;
@@ -77,75 +78,7 @@ export default function App() {
     tapTimeRef.current = Date.now();
     addLog(`Start Checkout tapped (${Platform.OS} ${Platform.Version})`);
 
-    const configurations = {
-      hashString: '',
-      language: 'en',
-      themeMode: 'light',
-      supportedPaymentMethods: 'ALL',
-      paymentType: 'ALL',
-      selectedCurrency: 'KWD',
-      supportedCurrencies: 'ALL',
-      supportedPaymentTypes: [],
-      supportedRegions: [],
-      supportedSchemes: [],
-      supportedCountries: [],
-      gateway: {
-        publicKey: 'pk_test_ohzQrUWRnTkCLD1cqMeudyjX',
-        merchantId: '',
-      },
-      customer: {
-        firstName: 'Android',
-        lastName: 'Test',
-        email: 'example@gmail.com',
-        phone: { countryCode: '965', number: '55567890' },
-      },
-      transaction: {
-        mode: 'charge',
-        charge: {
-          saveCard: true,
-          auto: { type: 'VOID', time: 100 },
-          redirect: {
-            url: 'https://demo.staging.tap.company/v2/sdk/checkout',
-          },
-          threeDSecure: true,
-          subscription: {
-            type: 'SCHEDULED',
-            amount_variability: 'FIXED',
-            txn_count: 0,
-          },
-          airline: {
-            reference: { booking: '' },
-          },
-        },
-      },
-      amount: '5',
-      order: {
-        id: '',
-        currency: 'KWD',
-        amount: '5',
-        items: [
-          {
-            amount: '5',
-            currency: 'KWD',
-            name: 'Item Title 1',
-            quantity: 1,
-            description: 'item description 1',
-          },
-        ],
-      },
-      cardOptions: {
-        showBrands: true,
-        showLoadingState: false,
-        collectHolderName: true,
-        preLoadCardName: '',
-        cardNameEditable: true,
-        cardFundingSource: 'all',
-        saveCardOption: 'all',
-        forceLtr: false,
-        alternativeCardInputs: { cardScanner: true, cardNFC: true },
-      },
-      isApplePayAvailableOnClient: true,
-    };
+    const configurations = checkoutConfiguration;
 
     const callbacks: CheckoutCallbacks = {
       onSuccess: (data: string) => {
