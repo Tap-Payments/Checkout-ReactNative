@@ -44,7 +44,7 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
     this.onCloseCallback = onClose
     this.onReadyCallback = onReady
 
-    val currentActivity = currentActivity
+    val currentActivity = reactApplicationContext.currentActivity
     if (currentActivity == null) {
       onError.invoke("NO_ACTIVITY", "No activity available")
       return
@@ -256,7 +256,7 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
   private fun removeFullscreenView() {
     UiThreadUtil.runOnUiThread {
       fullscreenView?.let { view ->
-        val contentView = currentActivity?.findViewById<ViewGroup>(android.R.id.content)
+        val contentView = reactApplicationContext.currentActivity?.findViewById<ViewGroup>(android.R.id.content)
         contentView?.removeView(view)
         fullscreenView = null
       }
