@@ -1,4 +1,5 @@
 #import <CheckoutReactNativeSpec/CheckoutReactNativeSpec.h>
-@interface CheckoutReactNative : NSObject <NativeCheckoutReactNativeSpec>
+// NativeCheckoutReactNativeSpecBase provides emitOnChargeCreated: for the onChargeCreated event.
+@interface CheckoutReactNative : NativeCheckoutReactNativeSpecBase <NativeCheckoutReactNativeSpec>
 
 @end

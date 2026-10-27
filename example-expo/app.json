@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Checkout Expo Example",
+    "slug": "checkout-react-native-expo-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "checkoutreactnative.expoexample"
+    },
+    "android": {
+      "package": "checkoutreactnative.expoexample",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "plugins": [
+      [
+        "../app.plugin.js",
+        {
+          "cameraPermission": "The camera is used to scan your card."
+        }
+      ]
+    ]
+  }
+}

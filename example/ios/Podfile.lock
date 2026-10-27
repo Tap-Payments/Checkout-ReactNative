@@ -1,15 +1,13 @@
 PODS:
   - boost (1.84.0):
     - ReactNativeDependencies
-  - Checkout-IOS (1.0.3):
+  - Checkout-IOS (1.0.7):
     - SharedDataModels-iOS
-    - SnapKit
-    - SwiftEntryKit
-    - SwiftyRSA
     - TapCardScannerWebWrapper-iOS
     - TapFontKit-iOS
-  - CheckoutReactNative (1.0.6):
-    - Checkout-IOS (= 1.0.3)
+    - TapSwiftEntryKit
+  - CheckoutReactNative (1.0.7):
+    - Checkout-IOS (= 1.0.7)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1276,6 +1274,75 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - react-native-safe-area-context (5.10.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common (= 5.10.1)
+    - react-native-safe-area-context/fabric (= 5.10.1)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-safe-area-context/common (5.10.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-safe-area-context/fabric (5.10.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - React-NativeModulesApple (0.87.1):
     - hermes-engine
     - React-bridging
@@ -1634,27 +1701,15 @@ PODS:
     - React-utils (= 0.87.1)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.87.1)
-  - SharedDataModels-iOS (0.0.12)
-  - SnapKit (5.7.1)
+  - SharedDataModels-iOS (0.0.14)
   - SocketRocket (0.7.1):
     - ReactNativeDependencies
-  - SwiftEntryKit (2.0.0)
-  - SwiftyRSA (1.7.0):
-    - SwiftyRSA/ObjC (= 1.7.0)
-  - SwiftyRSA/ObjC (1.7.0)
-  - TapCardScannerWebWrapper-iOS (0.0.8):
-    - SharedDataModels-iOS
-    - TapCardVlidatorKit-iOS
-  - TapCardVlidatorKit-iOS (1.0.24)
-  - TapFontKit-iOS (0.0.11):
-    - TapSwiftFixesV2
-  - TapSwiftFixesV2 (1.0.3):
-    - TapSwiftFixesV2/CoreGraphics (= 1.0.3)
-    - TapSwiftFixesV2/Exceptions (= 1.0.3)
-    - TapSwiftFixesV2/Threading (= 1.0.3)
-  - TapSwiftFixesV2/CoreGraphics (1.0.3)
-  - TapSwiftFixesV2/Exceptions (1.0.3)
-  - TapSwiftFixesV2/Threading (1.0.3)
+  - TapCardScannerWebWrapper-iOS (0.0.10):
+    - SharedDataModels-iOS (>= 0.0.14)
+    - TapCardVlidatorKit-iOS (>= 1.0.26)
+  - TapCardVlidatorKit-iOS (1.0.26)
+  - TapFontKit-iOS (0.0.12)
+  - TapSwiftEntryKit (2.0.2)
   - Yoga (0.0.0):
     - React-Core-prebuilt
 
@@ -1708,6 +1763,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - React-mutationobservernativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-networking (from `../node_modules/react-native/ReactCommon/react/networking`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -1751,13 +1807,10 @@ SPEC REPOS:
   trunk:
     - Checkout-IOS
     - SharedDataModels-iOS
-    - SnapKit
-    - SwiftEntryKit
-    - SwiftyRSA
     - TapCardScannerWebWrapper-iOS
     - TapCardVlidatorKit-iOS
     - TapFontKit-iOS
-    - TapSwiftFixesV2
+    - TapSwiftEntryKit
 
 EXTERNAL SOURCES:
   boost:
@@ -1857,6 +1910,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   React-mutationobservernativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -1936,8 +1991,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 8502bfdc46e2804408af2e163049ece181009af4
-  Checkout-IOS: 06625dfcce41b2337c385a0d1ed2b3d460f21f29
-  CheckoutReactNative: 22cc2c7457d145867b0283a919ffb0e2e2e442d8
+  Checkout-IOS: e26e488afcf47bc297846f544794bd67b8554b4c
+  CheckoutReactNative: d9b09a385b8b741fa834f180593b389b651d3587
   DoubleConversion: 501a575c40c0b50c89685762dd3e415e6bb26fb0
   fast_float: 7c925d1cebf8328d4018d061f49377e9f887e3b4
   FBLazyVector: e08a27053b503eeb756ea4bd75d570d2f2522a1b
@@ -1984,6 +2039,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 295203fc648a43acf7fba609ddf573aa9fca849f
   React-microtasksnativemodule: 269f81deee27a2a9bedb6b2d1088c1ae93de9bd3
   React-mutationobservernativemodule: 877e9f730e0d8175c2e952901b55c170fc3d372f
+  react-native-safe-area-context: f2bf5d3db254014a48910436c4a58ab0c4e2fe1f
   React-NativeModulesApple: adb1dd8361dff80e9f6652fb3fdbf033cfbe2a89
   React-networking: c00b437c4408f0640ba0d4158357133488521eca
   React-oscompat: 3175a287dd7175d1a20fdce5048a4b9e11f4b915
@@ -2020,15 +2076,12 @@ SPEC CHECKSUMS:
   ReactCodegen: 13d2ebfe2d8f1200052509b4fc4abf7a6825a7fc
   ReactCommon: 749169e12aa3461a3df3656a00e48dbe0456b2d6
   ReactNativeDependencies: 94c922c39e0e6150ee9ad05e2ca1946e0ef55783
-  SharedDataModels-iOS: 03d22b8a256a6ce698180b24d3ff8fefe42707b1
-  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+  SharedDataModels-iOS: c01a406594091c60e59e2d6bbe9fd810ab9ec5e9
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
-  SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
-  SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
-  TapCardScannerWebWrapper-iOS: c8f05e90f418e910600db43e082a81ae6e5af8ad
-  TapCardVlidatorKit-iOS: 05d3e644dddd6aa52dd95cc85a2c41f7ce0ba2f9
-  TapFontKit-iOS: c17f595e4d94b5c5c49fda159596a7f23bdffb94
-  TapSwiftFixesV2: ea726f752b6259d9e44624039fd6bad94b2a8633
+  TapCardScannerWebWrapper-iOS: 0c41ce74e5b1889056a863b0aa81147abf4abd11
+  TapCardVlidatorKit-iOS: 5d2edb8881c1d8c55f57bd7691e2af7e3cc9d8a2
+  TapFontKit-iOS: c020790e9d7ef7b99fd9c1bd33f8c6fdc75b30c9
+  TapSwiftEntryKit: a3d866e56247953c6080e26f0263db8302d882c0
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
 PODFILE CHECKSUM: ede2557541e2f54cb820ab3fab606d23eeeb943b

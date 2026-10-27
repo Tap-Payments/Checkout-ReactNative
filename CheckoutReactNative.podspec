@@ -22,8 +22,18 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.dependency 'Checkout-IOS', '1.0.3'
-
+  # Checkout-IOS comes from CocoaPods by default. Run `CHECKOUT_IOS_SPM=1 pod install` to take it
+  # from its Swift package instead (React Native's spm_dependency adds it to the Pods project).
+  checkout_ios_version = '1.0.7'
+  if ENV['CHECKOUT_IOS_SPM'] == '1'
+    spm_dependency(s,
+      url: 'https://github.com/Tap-Payments/Checkout-IOS.git',
+      requirement: { kind: 'exactVersion', version: checkout_ios_version },
+      products: ['Checkout-IOS']
+    )
+  else
+    s.dependency 'Checkout-IOS', checkout_ios_version
+  end
 
   install_modules_dependencies(s)
 end

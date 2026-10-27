@@ -87,6 +87,13 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Each instrumented test runs in a fresh app process with cleared data, like a relaunch on iOS.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
     signingConfigs {
         debug {
@@ -119,4 +126,10 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // ReadmeConfigurationTests (same as the Checkout-Android example app's).
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    androidTestUtil 'androidx.test:orchestrator:1.5.1'
 }

@@ -75,7 +75,7 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
 
         // Add Android-specific configurations
         androidConfiguration["open"] = true
-        androidConfiguration["checkoutMode"] = "page"
+        androidConfiguration.putIfAbsent("checkoutMode", "page")
         androidConfiguration["isApplePayAvailableOnClient"] = false
 
         // Handle transaction mode: if authorize mode, move charge data to authorize key
@@ -238,7 +238,8 @@ class CheckoutReactNativeModule(reactContext: ReactApplicationContext) :
       }
 
       override fun onCheckoutChargeCreated(data: String) {
-        // Not needed for React Native
+        // Sent as an event, so it fires for every charge (e.g. again after coming back from KNET)
+        emitOnChargeCreated(data)
       }
 
       override fun onCheckoutError(error: String) {
