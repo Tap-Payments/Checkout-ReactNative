@@ -5,8 +5,6 @@ import ReactAppDependencyProvider
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-  var window: UIWindow?
-
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
 
@@ -20,16 +18,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
+    return true
+  }
 
-    window = UIWindow(frame: UIScreen.main.bounds)
+  func application(
+    _ application: UIApplication,
+    configurationForConnecting connectingSceneSession: UISceneSession,
+    options: UIScene.ConnectionOptions
+  ) -> UISceneConfiguration {
+    UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+  }
+}
+
+/// Apps built with the iOS 27 SDK must use the scene life cycle, so React Native starts here.
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+  var window: UIWindow?
+
+  func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let windowScene = scene as? UIWindowScene,
+          let factory = (UIApplication.shared.delegate as? AppDelegate)?.reactNativeFactory else { return }
+    let window = UIWindow(windowScene: windowScene)
+    self.window = window
 
     factory.startReactNative(
       withModuleName: "CheckoutReactNativeExample",
       in: window,
-      launchOptions: launchOptions
+      initialProperties: uiTestProperties(),
+      launchOptions: nil
     )
+  }
 
-    return true
+  /// The UI tests' launch environment (see example/src/UITestHooks.ts), passed to the app as
+  /// initial props. Debug builds only.
+  private func uiTestProperties() -> [AnyHashable: Any] {
+#if DEBUG
+    let keys = ["UITEST", "UITEST_AUTOSTART", "UITEST_PUBLIC_KEY", "UITEST_CONFIG_OVERRIDES"]
+    let environment = ProcessInfo.processInfo.environment
+    return Dictionary(uniqueKeysWithValues: keys.compactMap { key in environment[key].map { (key, $0) } })
+#else
+    return [:]
+#endif
   }
 }
 

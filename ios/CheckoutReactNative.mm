@@ -17,11 +17,16 @@ RCT_EXPORT_METHOD(startCheckout:(NSDictionary *)configurations
                   onClose:(RCTResponseSenderBlock)onClose
                   onReady:(RCTResponseSenderBlock)onReady) {
   _bridge = [[CheckoutSDKBridge alloc] init];  // Store reference as instance variable
+  __weak CheckoutReactNative *weakSelf = self;
   [_bridge startCheckoutWithConfigurations:configurations
                                   onSuccess:onSuccess
                                     onError:onError
                                     onClose:onClose
-                                    onReady:onReady];
+                                    onReady:onReady
+                            onChargeCreated:^(NSString *data) {
+    // An event, so it can fire again when the customer retries (e.g. back from KNET)
+    [weakSelf emitOnChargeCreated:data];
+  }];
 }
 
 // Don't compile this code when we build for the old architecture.

@@ -38,6 +38,16 @@
                ReferencedContainer = "container:CheckoutReactNativeExample.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "310F6729DAD184B3A8C84AA0"
+               BuildableName = "CheckoutReactNativeExampleUITests.xctest"
+               BlueprintName = "CheckoutReactNativeExampleUITests"
+               ReferencedContainer = "container:CheckoutReactNativeExample.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

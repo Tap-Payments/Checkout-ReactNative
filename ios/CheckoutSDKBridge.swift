@@ -16,18 +16,21 @@ public class CheckoutSDKBridge: NSObject {
   private var onCheckoutError: RCTResponseSenderBlock?
   private var onCheckoutClose: RCTResponseSenderBlock?
   private var onCheckoutReady: RCTResponseSenderBlock?
-  
+  private var onCheckoutChargeCreated: ((String) -> Void)?
+
   @objc public func startCheckout(
     configurations: [String: Any],
     onSuccess: @escaping RCTResponseSenderBlock,
     onError: @escaping RCTResponseSenderBlock,
     onClose: @escaping RCTResponseSenderBlock,
-    onReady: @escaping RCTResponseSenderBlock
+    onReady: @escaping RCTResponseSenderBlock,
+    onChargeCreated: @escaping (String) -> Void
   ) {
     self.onCheckoutSuccess = onSuccess
     self.onCheckoutError = onError
     self.onCheckoutClose = onClose
     self.onCheckoutReady = onReady
+    self.onCheckoutChargeCreated = onChargeCreated
     
     DispatchQueue.main.async {
       // Start the checkout SDK
@@ -53,13 +56,20 @@ extension CheckoutSDKBridge: CheckoutSDKDelegate {
    public func onError(data: String) {
      onCheckoutError?([data])
    }
+
+   public func onChargeCreated(data: String) {
+     // Sent as an event, so it fires for every charge (e.g. again after coming back from KNET)
+     onCheckoutChargeCreated?(data)
+   }
    
    public var controller: UIViewController {
-     // Return the root view controller for the SDK to present on
+     // Present on the top-most view controller, so the sheet also opens over a React Native modal
      guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first else {
+           let window = windowScene.windows.first(where: { $0.isKeyWindow }) ?? windowScene.windows.first,
+           var top = window.rootViewController else {
        return UIViewController()
      }
-     return window.rootViewController ?? UIViewController()
+     while let presented = top.presentedViewController { top = presented }
+     return top
    }
 }

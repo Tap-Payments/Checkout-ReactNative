@@ -10,7 +10,8 @@
       "types": "./lib/typescript/src/index.d.ts",
       "default": "./lib/module/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
   },
   "files": [
     "src",
@@ -20,6 +21,7 @@
     "cpp",
     "*.podspec",
     "react-native.config.js",
+    "app.plugin.js",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -33,6 +35,15 @@
   ],
   "scripts": {
     "example": "yarn workspace checkout-react-native-example",
+    "example:expo": "yarn workspace checkout-react-native-expo-example",
+    "start": "yarn example start",
+    "ios:pods": "yarn example ios",
+    "ios:spm": "yarn example ios:spm",
+    "android": "yarn example android",
+    "expo:start": "yarn example:expo start",
+    "expo:ios:pods": "yarn example:expo ios",
+    "expo:ios:spm": "yarn example:expo ios:spm",
+    "expo:android": "yarn example:expo android",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -90,13 +101,15 @@
     "react-native": "*"
   },
   "workspaces": [
-    "example"
+    "example",
+    "example-expo"
   ],
   "packageManager": "yarn@3.6.1",
   "jest": {
     "preset": "@react-native/jest-preset",
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
+      "<rootDir>/example-expo/node_modules",
       "<rootDir>/lib/"
     ]
   },

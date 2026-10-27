@@ -1,4 +1,4 @@
-import type { TurboModule } from 'react-native';
+import type { CodegenTypes, TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface CheckoutCallbacks {
@@ -6,6 +6,9 @@ export interface CheckoutCallbacks {
   onError: (error: string) => void;
   onClose: () => void;
   onReady: () => void;
+  /** Fires every time the checkout creates a charge, e.g. again after the customer comes back
+   * from KNET or another redirect and pays again. */
+  onChargeCreated?: (data: string) => void;
 }
 
 export interface Spec extends TurboModule {
@@ -16,6 +19,10 @@ export interface Spec extends TurboModule {
     onClose: () => void,
     onReady: () => void
   ): void;
+
+  // An event, not a callback: a callback can only be invoked once, and a charge can be created
+  // more than once in one checkout.
+  readonly onChargeCreated: CodegenTypes.EventEmitter<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('CheckoutReactNative');
